@@ -16,6 +16,11 @@ public class POC3PermissionDefinitionProvider : PermissionDefinitionProvider
         invoicePermission.AddChild(POC3Permissions.Invoice.Create, L("Permission:Create"));
         invoicePermission.AddChild(POC3Permissions.Invoice.Update, L("Permission:Update"));
         invoicePermission.AddChild(POC3Permissions.Invoice.Delete, L("Permission:Delete"));
+
+        var invoiceLinePermission = myGroup.AddPermission(POC3Permissions.InvoiceLine.Default, L("Permission:InvoiceLine"));
+        invoiceLinePermission.AddChild(POC3Permissions.InvoiceLine.Create, L("Permission:Create"));
+        invoiceLinePermission.AddChild(POC3Permissions.InvoiceLine.Update, L("Permission:Update"));
+        invoiceLinePermission.AddChild(POC3Permissions.InvoiceLine.Delete, L("Permission:Delete"));
     }
 
     private static LocalizableString L(string name)

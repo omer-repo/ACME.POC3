@@ -43,6 +43,7 @@ public class POC3EntityFrameworkCoreModule : AbpModule
                  * default repositories only for aggregate roots */
             options.AddDefaultRepositories(includeAllEntities: true);
             options.AddRepository<Invoice, InvoiceRepository>();
+            options.AddRepository<InvoiceLine, InvoiceLineRepository>();
         });
 
         Configure<AbpDbContextOptions>(options =>

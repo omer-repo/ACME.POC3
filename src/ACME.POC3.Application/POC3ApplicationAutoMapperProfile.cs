@@ -13,5 +13,7 @@ public class POC3ApplicationAutoMapperProfile : Profile
          * into multiple profile classes for a better organization. */
         CreateMap<Invoice, InvoiceDto>();
         CreateMap<CreateUpdateInvoiceDto, Invoice>(MemberList.Source);
+        CreateMap<InvoiceLine, InvoiceLineDto>();
+        CreateMap<CreateUpdateInvoiceLineDto, InvoiceLine>(MemberList.Source);
     }
 }

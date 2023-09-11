@@ -55,6 +55,7 @@ public class POC3DbContext :
 
     #endregion
     public DbSet<Invoice> Invoices { get; set; }
+    public DbSet<InvoiceLine> InvoiceLines { get; set; }
 
     public POC3DbContext(DbContextOptions<POC3DbContext> options)
         : base(options)
@@ -90,6 +91,16 @@ public class POC3DbContext :
         builder.Entity<Invoice>(b =>
         {
             b.ToTable(POC3Consts.DbTablePrefix + "Invoices", POC3Consts.DbSchema);
+            b.ConfigureByConvention(); 
+            
+
+            /* Configure more properties here */
+        });
+
+
+        builder.Entity<InvoiceLine>(b =>
+        {
+            b.ToTable(POC3Consts.DbTablePrefix + "InvoiceLines", POC3Consts.DbSchema);
             b.ConfigureByConvention(); 
             
 
