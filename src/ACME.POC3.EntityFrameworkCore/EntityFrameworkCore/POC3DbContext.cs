@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
@@ -12,6 +12,8 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using ACME.POC3.Invoice;
+using Volo.Abp.EntityFrameworkCore.Modeling;
 
 namespace ACME.POC3.EntityFrameworkCore;
 
@@ -52,6 +54,7 @@ public class POC3DbContext :
     public DbSet<TenantConnectionString> TenantConnectionStrings { get; set; }
 
     #endregion
+    public DbSet<Invoice> Invoices { get; set; }
 
     public POC3DbContext(DbContextOptions<POC3DbContext> options)
         : base(options)
@@ -82,5 +85,15 @@ public class POC3DbContext :
         //    b.ConfigureByConvention(); //auto configure for the base class props
         //    //...
         //});
+
+
+        builder.Entity<Invoice>(b =>
+        {
+            b.ToTable(POC3Consts.DbTablePrefix + "Invoices", POC3Consts.DbSchema);
+            b.ConfigureByConvention(); 
+            
+
+            /* Configure more properties here */
+        });
     }
 }
