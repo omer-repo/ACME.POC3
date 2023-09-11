@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using ACME.POC3.Permissions;
 using ACME.POC3.Invoice.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Validation;
+
 namespace ACME.POC3.Invoice;
 
 
@@ -183,7 +185,9 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, Guid, Invoi
             ;
     }
 
-    public async Task<InvoiceResult<string>> sendInvoiceFromLingaERP(GeneralInvoiceDto dto_Invoice)
+    [DisableValidation]
+    [Microsoft.AspNetCore.Mvc.HttpPost]
+    public async Task<InvoiceResult<string>> sendInvoiceFromERP(GeneralInvoiceDto dto_Invoice)
     {
         var invoiceResult = await saveGeneralInvoiceAsync(dto_Invoice);
         if (invoiceResult.HttpStatusCode != System.Net.HttpStatusCode.OK)
@@ -221,5 +225,10 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, Guid, Invoi
                 message = result.message
             };
         }
+    }
+
+    public async Task<string> SendTestInput(TestInputDto dto)
+    {
+        return "OK";
     }
 }

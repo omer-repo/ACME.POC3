@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Data;
+using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
 using Volo.Abp.MultiTenancy;
@@ -14,7 +15,7 @@ using Volo.Abp.Uow;
 
 namespace ACME.POC3.Invoice
 {
-    public class myInvoiceOutboxService
+    public class myInvoiceOutboxService : ITransientDependency
     {
         private readonly IGuidGenerator _guidGenerator;
         private readonly IDataFilter _dataFilter;
@@ -37,7 +38,6 @@ namespace ACME.POC3.Invoice
         [UnitOfWork]
         public virtual async Task<InvoiceResult<Invoice>> saveGeneralInvoiceToDb(GeneralInvoiceDto eInvoice)
         {
-
             var invoice = new Invoice(_guidGenerator.Create());
             InvoiceResult<Invoice> result = new InvoiceResult<Invoice>()
             {

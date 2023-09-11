@@ -1,16 +1,17 @@
 using System;
+using System.Threading.Tasks;
 using ACME.POC3.Invoice.Dtos;
 using Volo.Abp.Application.Services;
 
 namespace ACME.POC3.Invoice;
 
 public interface IInvoiceAppService :
-    ICrudAppService< 
-        InvoiceDto, 
-        Guid, 
+    ICrudAppService<
+        InvoiceDto,
+        Guid,
         InvoiceGetListInput,
         CreateUpdateInvoiceDto,
         CreateUpdateInvoiceDto>
 {
-
+    Task<InvoiceResult<string>> sendInvoiceFromERP(GeneralInvoiceDto dto_Invoice);
 }
