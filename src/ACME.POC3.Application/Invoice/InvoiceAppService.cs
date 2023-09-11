@@ -5,6 +5,12 @@ using ACME.POC3.Permissions;
 using ACME.POC3.Invoice.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Validation;
+using System.Collections.Generic;
+using System.Net;
+using Volo.Abp.Guids;
+using Volo.Abp.Data;
+using Volo.Abp.Uow;
+using Volo.Abp.ObjectMapping;
 
 namespace ACME.POC3.Invoice;
 
@@ -19,12 +25,25 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, Guid, Invoi
     protected override string DeletePolicyName { get; set; } = POC3Permissions.Invoice.Delete;
 
     private readonly IInvoiceRepository _repository;
-    private readonly myInvoiceOutboxService myInvoiceOutboxService;
+    //private readonly myInvoiceOutboxService myInvoiceOutboxService;
+    private readonly IGuidGenerator _guidGenerator;
+    private readonly IDataFilter _dataFilter;
+    private readonly IUnitOfWorkManager _unitOfWorkManager;
+    private readonly IMasterClientRepository _masterClientRepository;
+    private readonly IInvoiceRepository _invoiceRepository;
+    private readonly IObjectMapper _objectMapper;
+    private readonly IInvoiceLineRepository _invoiceLineRepository;
 
-    public InvoiceAppService(IInvoiceRepository repository, myInvoiceOutboxService myInvoiceOutboxService) : base(repository)
+    public InvoiceAppService(IInvoiceRepository repository,  IGuidGenerator guidGenerator, IDataFilter dataFilter, IUnitOfWorkManager unitOfWorkManager, IMasterClientRepository masterClientRepository, IInvoiceRepository invoiceRepository, IObjectMapper objectMapper, IInvoiceLineRepository invoiceLineRepository) : base(repository)
     {
         _repository = repository;
-        this.myInvoiceOutboxService = myInvoiceOutboxService;
+        _guidGenerator = guidGenerator;
+        _dataFilter = dataFilter;
+        _unitOfWorkManager = unitOfWorkManager;
+        _masterClientRepository = masterClientRepository;
+        _invoiceRepository = invoiceRepository;
+        _objectMapper = objectMapper;
+        _invoiceLineRepository = invoiceLineRepository;
     }
 
     protected override async Task<IQueryable<Invoice>> CreateFilteredQueryAsync(InvoiceGetListInput input)
@@ -185,50 +204,72 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, Guid, Invoi
             ;
     }
 
-    [DisableValidation]
-    [Microsoft.AspNetCore.Mvc.HttpPost]
-    public async Task<InvoiceResult<string>> sendInvoiceFromERP(GeneralInvoiceDto dto_Invoice)
-    {
-        var invoiceResult = await saveGeneralInvoiceAsync(dto_Invoice);
-        if (invoiceResult.HttpStatusCode != System.Net.HttpStatusCode.OK)
-        {
-            return invoiceResult;
-        }
-        else
-        {
-            return new InvoiceResult<string>()
-            {
-                HttpStatusCode = System.Net.HttpStatusCode.OK,
-                message = "OK",
-                ETTN = invoiceResult.ETTN.ToString(),
-                value = invoiceResult.value
-            };
-        }
-    }
+    //public async Task<InvoiceResult<string>> saveGeneralInvoice2Async(GeneralInvoiceDto Invoice)
+    //{
+    //    var result = await myInvoiceOutboxService.saveGeneralInvoiceToDb(Invoice);
+    //    if (result.HttpStatusCode == System.Net.HttpStatusCode.OK)
+    //    {
+    //        return new InvoiceResult<string>()
+    //        {
+    //            HttpStatusCode = System.Net.HttpStatusCode.OK,
+    //            message = "Invoice is saved",
+    //        };
+    //    }
+    //    else
+    //    {
+    //        return new InvoiceResult<string>()
+    //        {
+    //            HttpStatusCode = System.Net.HttpStatusCode.BadRequest,
+    //            message = result.message
+    //        };
+    //    }
+    //}
 
-    public async Task<InvoiceResult<string>> saveGeneralInvoiceAsync(GeneralInvoiceDto Invoice)
+    public virtual async Task<InvoiceResult<Invoice>> saveGeneralInvoiceToDb(GeneralInvoiceDto eInvoice)
     {
-        var result = await myInvoiceOutboxService.saveGeneralInvoiceToDb(Invoice);
-        if (result.HttpStatusCode == System.Net.HttpStatusCode.OK)
+        var invoice = new Invoice(_guidGenerator.Create());
+        InvoiceResult<Invoice> result = new InvoiceResult<Invoice>()
         {
-            return new InvoiceResult<string>()
-            {
-                HttpStatusCode = System.Net.HttpStatusCode.OK,
-                message = "Invoice is saved",
-            };
-        }
-        else
-        {
-            return new InvoiceResult<string>()
-            {
-                HttpStatusCode = System.Net.HttpStatusCode.BadRequest,
-                message = result.message
-            };
-        }
-    }
+            HttpStatusCode = HttpStatusCode.OK,
+            message = "",
+            value = invoice
+        };
 
-    public async Task<string> SendTestInput(TestInputDto dto)
-    {
-        return "OK";
+        using (var uow = _unitOfWorkManager.Begin(true, false))
+        {
+            #region MasterClient
+            MasterClient masterClient = new MasterClient(_guidGenerator.Create())
+            {
+                Name = eInvoice.invoice.Name,
+                Surname = eInvoice.invoice.Surname,
+                Title = eInvoice.invoice.Title,
+            };
+            await _masterClientRepository.InsertAsync(masterClient);
+            #endregion
+
+            #region Invoice
+            await _invoiceRepository.InsertAsync(invoice);
+            eInvoice.invoice = _objectMapper.Map<Invoice, InvoiceDto>(invoice);
+            eInvoice.invoice.MasterClientId = masterClient.Id;
+            #endregion
+
+            #region Invoice Lines
+            List<InvoiceLine> invoiceLineItems = new List<InvoiceLine>();
+            foreach (var item in eInvoice.invoiceLines)
+            {
+                item.MasterClientId = masterClient.Id;
+                item.InvoiceId = invoice.Id;
+                var lineItem = new InvoiceLine(_guidGenerator.Create());
+                _objectMapper.Map<InvoiceLineDto, InvoiceLine>(item, lineItem);
+                var invoiceLine = await _invoiceLineRepository.InsertAsync(lineItem);
+            }
+            #endregion
+
+            result.value = invoice;
+            await uow.CompleteAsync();
+
+            //IMPORTANT => I will use other services here, like background job managers. So, invoice have to be saved to db before these services.
+        }
+        return result;
     }
 }

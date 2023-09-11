@@ -13,5 +13,4 @@ public interface IInvoiceAppService :
         CreateUpdateInvoiceDto,
         CreateUpdateInvoiceDto>
 {
-    Task<InvoiceResult<string>> sendInvoiceFromERP(GeneralInvoiceDto dto_Invoice);
 }
