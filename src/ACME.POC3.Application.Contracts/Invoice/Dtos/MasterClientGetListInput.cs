@@ -7,9 +7,9 @@ namespace ACME.POC3.Invoice.Dtos;
 [Serializable]
 public class MasterClientGetListInput : PagedAndSortedResultRequestDto
 {
-    public int?? SourceId { get; set; }
+    public int? SourceId { get; set; }
 
-    public int?? SourceRefId { get; set; }
+    public int? SourceRefId { get; set; }
 
     public string SourceRefGuid { get; set; }
 
@@ -25,7 +25,7 @@ public class MasterClientGetListInput : PagedAndSortedResultRequestDto
 
     public string TaxOffice { get; set; }
 
-    public int?? TaxOfficeId { get; set; }
+    public int? TaxOfficeId { get; set; }
 
     public string Country { get; set; }
 
@@ -33,7 +33,7 @@ public class MasterClientGetListInput : PagedAndSortedResultRequestDto
 
     public string City { get; set; }
 
-    public int?? CityId { get; set; }
+    public int? CityId { get; set; }
 
     public Guid? PriceListId { get; set; }
 
@@ -41,9 +41,9 @@ public class MasterClientGetListInput : PagedAndSortedResultRequestDto
 
     public string Town { get; set; }
 
-    public int?? TownId { get; set; }
+    public int? TownId { get; set; }
 
-    public int?? ExchangeRateCalculation { get; set; }
+    public int? ExchangeRateCalculation { get; set; }
 
     public string BuildingName { get; set; }
 
@@ -67,7 +67,7 @@ public class MasterClientGetListInput : PagedAndSortedResultRequestDto
 
     public string SourceCode { get; set; }
 
-    public System.DateTime?? SourceLastUpdate { get; set; }
+    public System.DateTime? SourceLastUpdate { get; set; }
 
     public double? TotalCredit { get; set; }
 

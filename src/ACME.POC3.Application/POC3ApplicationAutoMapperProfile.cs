@@ -11,8 +11,8 @@ public class POC3ApplicationAutoMapperProfile : Profile
         /* You can configure your AutoMapper mapping configuration here.
          * Alternatively, you can split your mapping configurations
          * into multiple profile classes for a better organization. */
-        CreateMap<Invoice, InvoiceDto>();
-        CreateMap<CreateUpdateInvoiceDto, Invoice>(MemberList.Source);
+        CreateMap<Invoice.Invoice, InvoiceDto>();
+        CreateMap<CreateUpdateInvoiceDto, Invoice.Invoice>(MemberList.Source);
         CreateMap<InvoiceLine, InvoiceLineDto>();
         CreateMap<CreateUpdateInvoiceLineDto, InvoiceLine>(MemberList.Source);
         CreateMap<MasterClient, MasterClientDto>();

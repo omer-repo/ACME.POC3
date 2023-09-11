@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using ACME.POC3.Permissions;
 using ACME.POC3.Invoice.Dtos;
 using Volo.Abp.Application.Services;
-
 namespace ACME.POC3.Invoice;
 
 
@@ -18,10 +17,12 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, Guid, Invoi
     protected override string DeletePolicyName { get; set; } = POC3Permissions.Invoice.Delete;
 
     private readonly IInvoiceRepository _repository;
+    private readonly myInvoiceOutboxService myInvoiceOutboxService;
 
-    public InvoiceAppService(IInvoiceRepository repository) : base(repository)
+    public InvoiceAppService(IInvoiceRepository repository, myInvoiceOutboxService myInvoiceOutboxService) : base(repository)
     {
         _repository = repository;
+        this.myInvoiceOutboxService = myInvoiceOutboxService;
     }
 
     protected override async Task<IQueryable<Invoice>> CreateFilteredQueryAsync(InvoiceGetListInput input)
@@ -72,17 +73,11 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, Guid, Invoi
             .WhereIf(!input.ErpInvoiceNumber.IsNullOrWhiteSpace(), x => x.ErpInvoiceNumber.Contains(input.ErpInvoiceNumber))
             .WhereIf(!input.Note1.IsNullOrWhiteSpace(), x => x.Note1.Contains(input.Note1))
             .WhereIf(input.SubTotal != null, x => x.SubTotal == input.SubTotal)
-            .WhereIf(input._DiscountTotal != null, x => x._DiscountTotal == input._DiscountTotal)
             .WhereIf(input.DiscountTotal != null, x => x.DiscountTotal == input.DiscountTotal)
-            .WhereIf(input._TotalWithDiscount != null, x => x._TotalWithDiscount == input._TotalWithDiscount)
             .WhereIf(input.TotalWithDiscount != null, x => x.TotalWithDiscount == input.TotalWithDiscount)
-            .WhereIf(input._VatAmount != null, x => x._VatAmount == input._VatAmount)
             .WhereIf(input.VatAmount != null, x => x.VatAmount == input.VatAmount)
-            .WhereIf(input._TotalWithVat != null, x => x._TotalWithVat == input._TotalWithVat)
             .WhereIf(input.TotalWithVat != null, x => x.TotalWithVat == input.TotalWithVat)
-            .WhereIf(input._TotalWithholding != null, x => x._TotalWithholding == input._TotalWithholding)
             .WhereIf(input.TotalWithholding != null, x => x.TotalWithholding == input.TotalWithholding)
-            .WhereIf(input._TotalAmount != null, x => x._TotalAmount == input._TotalAmount)
             .WhereIf(input.TotalAmount != null, x => x.TotalAmount == input.TotalAmount)
             .WhereIf(input.SubTotalTL != null, x => x.SubTotalTL == input.SubTotalTL)
             .WhereIf(input.DiscountTotalTL != null, x => x.DiscountTotalTL == input.DiscountTotalTL)
@@ -99,7 +94,6 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, Guid, Invoi
             .WhereIf(!input.Title.IsNullOrWhiteSpace(), x => x.Title.Contains(input.Title))
             .WhereIf(!input.Name.IsNullOrWhiteSpace(), x => x.Name.Contains(input.Name))
             .WhereIf(!input.Surname.IsNullOrWhiteSpace(), x => x.Surname.Contains(input.Surname))
-            .WhereIf(input._CurrencyRate != null, x => x._CurrencyRate == input._CurrencyRate)
             .WhereIf(input.CurrencyRate != null, x => x.CurrencyRate == input.CurrencyRate)
             .WhereIf(!input.SerialNumber.IsNullOrWhiteSpace(), x => x.SerialNumber.Contains(input.SerialNumber))
             .WhereIf(!input.DrawInvoiceNumber.IsNullOrWhiteSpace(), x => x.DrawInvoiceNumber.Contains(input.DrawInvoiceNumber))
@@ -187,5 +181,45 @@ public class InvoiceAppService : CrudAppService<Invoice, InvoiceDto, Guid, Invoi
             .WhereIf(input.TransactionId != null, x => x.TransactionId == input.TransactionId)
             .WhereIf(input.isAffectStock != null, x => x.isAffectStock == input.isAffectStock)
             ;
+    }
+
+    public async Task<InvoiceResult<string>> sendInvoiceFromLingaERP(GeneralInvoiceDto dto_Invoice)
+    {
+        var invoiceResult = await saveGeneralInvoiceAsync(dto_Invoice);
+        if (invoiceResult.HttpStatusCode != System.Net.HttpStatusCode.OK)
+        {
+            return invoiceResult;
+        }
+        else
+        {
+            return new InvoiceResult<string>()
+            {
+                HttpStatusCode = System.Net.HttpStatusCode.OK,
+                message = "OK",
+                ETTN = invoiceResult.ETTN.ToString(),
+                value = invoiceResult.value
+            };
+        }
+    }
+
+    public async Task<InvoiceResult<string>> saveGeneralInvoiceAsync(GeneralInvoiceDto Invoice)
+    {
+        var result = await myInvoiceOutboxService.saveGeneralInvoiceToDb(Invoice);
+        if (result.HttpStatusCode == System.Net.HttpStatusCode.OK)
+        {
+            return new InvoiceResult<string>()
+            {
+                HttpStatusCode = System.Net.HttpStatusCode.OK,
+                message = "Invoice is saved",
+            };
+        }
+        else
+        {
+            return new InvoiceResult<string>()
+            {
+                HttpStatusCode = System.Net.HttpStatusCode.BadRequest,
+                message = result.message
+            };
+        }
     }
 }

@@ -9,7 +9,7 @@ public class InvoiceLineGetListInput : PagedAndSortedResultRequestDto
 {
     public Guid? InvoiceId { get; set; }
 
-    public Guid?? ProductId { get; set; }
+    public Guid? ProductId { get; set; }
 
     public string ProductName { get; set; }
 
@@ -95,5 +95,5 @@ public class InvoiceLineGetListInput : PagedAndSortedResultRequestDto
 
     public string ExportShipmentPostalCode { get; set; }
 
-    public Guid?? ProductTransactionId { get; set; }
+    public Guid? ProductTransactionId { get; set; }
 }

@@ -54,7 +54,7 @@ public class POC3DbContext :
     public DbSet<TenantConnectionString> TenantConnectionStrings { get; set; }
 
     #endregion
-    public DbSet<Invoice> Invoices { get; set; }
+    public DbSet<Invoice.Invoice> Invoices { get; set; }
     public DbSet<InvoiceLine> InvoiceLines { get; set; }
     public DbSet<MasterClient> MasterClients { get; set; }
 
@@ -89,7 +89,7 @@ public class POC3DbContext :
         //});
 
 
-        builder.Entity<Invoice>(b =>
+        builder.Entity<Invoice.Invoice>(b =>
         {
             b.ToTable(POC3Consts.DbTablePrefix + "Invoices", POC3Consts.DbSchema);
             b.ConfigureByConvention(); 

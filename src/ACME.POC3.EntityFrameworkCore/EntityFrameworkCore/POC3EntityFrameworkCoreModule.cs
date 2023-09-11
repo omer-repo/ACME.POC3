@@ -42,7 +42,7 @@ public class POC3EntityFrameworkCoreModule : AbpModule
                 /* Remove "includeAllEntities: true" to create
                  * default repositories only for aggregate roots */
             options.AddDefaultRepositories(includeAllEntities: true);
-            options.AddRepository<Invoice, InvoiceRepository>();
+            options.AddRepository<Invoice.Invoice, InvoiceRepository>();
             options.AddRepository<InvoiceLine, InvoiceLineRepository>();
             options.AddRepository<MasterClient, MasterClientRepository>();
         });

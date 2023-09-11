@@ -15,19 +15,19 @@ public class InvoiceGetListInput : PagedAndSortedResultRequestDto
 
     public string SalesType { get; set; }
 
-    public Nullable<int>? SalesTypeId { get; set; }
+    public Nullable<int> SalesTypeId { get; set; }
 
     public string SendingType { get; set; }
 
     public string WebUrl { get; set; }
 
-    public DateTime?? SendingDate { get; set; }
+    public DateTime? SendingDate { get; set; }
 
     public string ShippingPartyName { get; set; }
 
     public string ShippingVKN { get; set; }
 
-    public DateTime?? PaymentDate { get; set; }
+    public DateTime? PaymentDate { get; set; }
 
     public string PaymentTypeCode { get; set; }
 
@@ -75,7 +75,7 @@ public class InvoiceGetListInput : PagedAndSortedResultRequestDto
 
     public DateTime? InvoiceDate { get; set; }
 
-    public DateTime?? SendDate { get; set; }
+    public DateTime? SendDate { get; set; }
 
     public int? TemplateId { get; set; }
 
@@ -83,11 +83,11 @@ public class InvoiceGetListInput : PagedAndSortedResultRequestDto
 
     public string OrderNumber { get; set; }
 
-    public DateTime?? OrderDate { get; set; }
+    public DateTime? OrderDate { get; set; }
 
     public string DispatchNumber { get; set; }
 
-    public DateTime?? DispatchDate { get; set; }
+    public DateTime? DispatchDate { get; set; }
 
     public string ErpInvoiceNumber { get; set; }
 
@@ -159,9 +159,9 @@ public class InvoiceGetListInput : PagedAndSortedResultRequestDto
 
     public string EnvelopeNumber { get; set; }
 
-    public Guid?? DrawEttn { get; set; }
+    public Guid? DrawEttn { get; set; }
 
-    public Guid?? Ettn { get; set; }
+    public Guid? Ettn { get; set; }
 
     public int? StatusId { get; set; }
 
@@ -187,9 +187,9 @@ public class InvoiceGetListInput : PagedAndSortedResultRequestDto
 
     public double? ChargeTotalAmount { get; set; }
 
-    public DateTime?? PaymentDueDate { get; set; }
+    public DateTime? PaymentDueDate { get; set; }
 
-    public DateTime?? GIBDate { get; set; }
+    public DateTime? GIBDate { get; set; }
 
     public bool? isEInvoice { get; set; }
 
@@ -203,21 +203,21 @@ public class InvoiceGetListInput : PagedAndSortedResultRequestDto
 
     public string cancelNote { get; set; }
 
-    public DateTime?? cancelDate { get; set; }
+    public DateTime? cancelDate { get; set; }
 
     public bool? isAccepted { get; set; }
 
-    public DateTime?? acceptDate { get; set; }
+    public DateTime? acceptDate { get; set; }
 
     public bool? isRejected { get; set; }
 
     public string rejectNote { get; set; }
 
-    public DateTime?? rejectDate { get; set; }
+    public DateTime? rejectDate { get; set; }
 
     public string DirectionText { get; set; }
 
-    public DateTime?? IntegrationDate { get; set; }
+    public DateTime? IntegrationDate { get; set; }
 
     public int? SourceId { get; set; }
 
@@ -263,13 +263,13 @@ public class InvoiceGetListInput : PagedAndSortedResultRequestDto
 
     public string SGKDosyaNo { get; set; }
 
-    public DateTime?? SGKDonemStartDate { get; set; }
+    public DateTime? SGKDonemStartDate { get; set; }
 
-    public DateTime?? SGKDonemEndDate { get; set; }
+    public DateTime? SGKDonemEndDate { get; set; }
 
     public int? ProjectId { get; set; }
 
-    public Guid?? BuyerClientId { get; set; }
+    public Guid? BuyerClientId { get; set; }
 
     public string BuyerCustomerIdOrTaxNumber { get; set; }
 
@@ -319,7 +319,7 @@ public class InvoiceGetListInput : PagedAndSortedResultRequestDto
 
     public string ExportShipmentPostalCode { get; set; }
 
-    public Guid?? TransactionId { get; set; }
+    public Guid? TransactionId { get; set; }
 
     public bool? isAffectStock { get; set; }
 }
