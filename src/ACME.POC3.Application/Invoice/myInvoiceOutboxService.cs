@@ -52,9 +52,6 @@ namespace ACME.POC3.Invoice
                     #region MasterClient
                     MasterClient masterClient;
 
-                    eInvoice.invoice.TCKN_VN = eInvoice.invoice.TCKN_VN.Trim();
-                    eInvoice.invoice.Title = eInvoice.invoice.Title.Trim();
-
 
                     if (eInvoice.invoice.MasterClientId != Guid.Empty)
                     {
@@ -73,139 +70,31 @@ namespace ACME.POC3.Invoice
                     {
                         masterClient = new MasterClient(_guidGenerator.Create())
                         {
-                            BuildingName = eInvoice.invoice.BuildingName,
-                            TCKN_VN = eInvoice.invoice.TCKN_VN,
                             Name = eInvoice.invoice.Name,
-                            BuildingNumber = eInvoice.invoice.BuildingNumber,
-                            City = eInvoice.invoice.City,
-                            CityId = eInvoice.invoice.CityId,
-                            Country = eInvoice.invoice.Country,
-                            DoorNumber = eInvoice.invoice.DoorNumber,
-                            Email = eInvoice.invoice.Email,
-                            Fax = eInvoice.invoice.Fax,
-                            Phone = eInvoice.invoice.Phone,
-                            PostCode = eInvoice.invoice.PostCode,
-                            StreetName = eInvoice.invoice.StreetName,
                             Surname = eInvoice.invoice.Surname,
-                            TaxOffice = eInvoice.invoice.TaxOffice,
-                            TaxOfficeId = eInvoice.invoice.TaxOfficeId,
                             Title = eInvoice.invoice.Title,
-                            Town = eInvoice.invoice.Town,
-                            TownId = eInvoice.invoice.TownId,
-                            WebAddress = eInvoice.invoice.WebAddress,
 
-                            SourceId = eInvoice.invoice.SourceId,
-                            SourceCode = eInvoice.MasterClientERPCode,
-                            SourceRefGuid = eInvoice.MasterClientERPReference
                         };
                         await _masterClientRepository.InsertAsync(masterClient);
                     }
                     else
                     {
-                        masterClient.BuildingName = eInvoice.invoice.BuildingName;
-
-                        masterClient.BuildingNumber = eInvoice.invoice.BuildingNumber;
-                        masterClient.City = eInvoice.invoice.City;
-                        masterClient.CityId = eInvoice.invoice.CityId;
-                        masterClient.Country = eInvoice.invoice.Country;
-                        masterClient.DoorNumber = eInvoice.invoice.DoorNumber;
-                        masterClient.Email = eInvoice.invoice.Email;
-                        masterClient.Fax = eInvoice.invoice.Fax;
-                        masterClient.Phone = eInvoice.invoice.Phone;
-                        masterClient.PostCode = eInvoice.invoice.PostCode;
-                        masterClient.StreetName = eInvoice.invoice.StreetName;
-                        masterClient.TaxOffice = eInvoice.invoice.TaxOffice;
-                        masterClient.TaxOfficeId = eInvoice.invoice.TaxOfficeId;
                         masterClient.Title = eInvoice.invoice.Title;
-                        masterClient.Town = eInvoice.invoice.Town;
-                        masterClient.TownId = eInvoice.invoice.TownId;
-                        masterClient.WebAddress = eInvoice.invoice.WebAddress;
 
                         await _masterClientRepository.UpdateAsync(masterClient);
                     }
                     #endregion
 
                     #region Invoice
-                    bool isNewInvoice = true;
-
-                    if ((eInvoice.invoice.Id != Guid.Empty))
-                    {
-                        isNewInvoice = false;
-                        invoice = await _invoiceRepository.GetAsync(eInvoice.invoice.Id);
-                    }
-                    else
-                    {
-                        isNewInvoice = true;
-                        invoice = await _invoiceRepository.FirstOrDefaultAsync(x => x.DrawEttn == eInvoice.invoice.DrawEttn);
-                    }
 
 
-                    if (invoice == null)
-                    {
-                        isNewInvoice = true;
-
-                    }
-                    else
-                    {
-                        isNewInvoice = false;
-                    }
-
-                    if (isNewInvoice)
-                    {
-                        invoice = _objectMapper.Map<InvoiceDto, Invoice>(eInvoice.invoice);
-                    }
-                    else
-                    {
-                        _objectMapper.Map<InvoiceDto, Invoice>(eInvoice.invoice, invoice);
-                    }
-
-
-                    if (isNewInvoice)
-                    {
-                        invoice.MasterClientId = masterClient.Id;
-
-                        invoice.isDraft = true;
-                    }
-                    invoice.isCancelled = false;
-                    invoice.isOutgoing = eInvoice.invoice.isOutgoing;
-                    invoice.isEInvoice = eInvoice.invoice.isEInvoice;
-                    invoice.ProfileId = eInvoice.invoice.Scenario;
-                    invoice.ReceiverPostBoxName = eInvoice.invoice.EInvoicePostCode;
-                    invoice.Scenario = eInvoice.invoice.Scenario;
-                    invoice.EInvoicePostCode = eInvoice.invoice.EInvoicePostCode;
-
-
-                    if (isNewInvoice)
-                    {
-                        await _invoiceRepository.InsertAsync(invoice);
-                    }
-                    else
-                    {
-                        await _invoiceRepository.UpdateAsync(invoice);
-                    }
-
-
-
+                    await _invoiceRepository.InsertAsync(invoice);
                     eInvoice.invoice = _objectMapper.Map<Invoice, InvoiceDto>(invoice);
                     eInvoice.invoice.MasterClientId = masterClient.Id;
                     #endregion
 
                     #region Invoice Lines
-                    decimal SubTotal = 0;
-                    decimal TotalWithDiscount = 0;
-                    decimal TotalWithVat = 0;
-                    decimal VatAmount = 0;
-
-
-
-                    SubTotal = Math.Round(SubTotal, 2);
-                    TotalWithDiscount = Math.Round(TotalWithDiscount, 2);
-                    TotalWithVat = Math.Round(TotalWithVat, 2);
-                    VatAmount = Math.Round(VatAmount, 2);
-
-
-                    var newInvoiceLineList = new List<Guid>();
-                    int LineId = 1;
+                    
                     List<InvoiceLine> invoiceLineItems = new List<InvoiceLine>();
                     foreach (var item in eInvoice.invoiceLines)
                     {

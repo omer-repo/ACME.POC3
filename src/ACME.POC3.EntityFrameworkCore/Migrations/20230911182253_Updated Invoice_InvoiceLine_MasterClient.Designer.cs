@@ -4,6 +4,7 @@ using ACME.POC3.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace ACME.POC3.Migrations
 {
     [DbContext(typeof(POC3DbContext))]
-    partial class POC3DbContextModelSnapshot : ModelSnapshot
+    [Migration("20230911182253_Updated Invoice_InvoiceLine_MasterClient")]
+    partial class UpdatedInvoiceInvoiceLineMasterClient
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
