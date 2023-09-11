@@ -44,6 +44,7 @@ public class POC3EntityFrameworkCoreModule : AbpModule
             options.AddDefaultRepositories(includeAllEntities: true);
             options.AddRepository<Invoice, InvoiceRepository>();
             options.AddRepository<InvoiceLine, InvoiceLineRepository>();
+            options.AddRepository<MasterClient, MasterClientRepository>();
         });
 
         Configure<AbpDbContextOptions>(options =>

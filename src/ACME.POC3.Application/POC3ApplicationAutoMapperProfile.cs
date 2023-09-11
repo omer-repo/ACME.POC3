@@ -15,5 +15,7 @@ public class POC3ApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateInvoiceDto, Invoice>(MemberList.Source);
         CreateMap<InvoiceLine, InvoiceLineDto>();
         CreateMap<CreateUpdateInvoiceLineDto, InvoiceLine>(MemberList.Source);
+        CreateMap<MasterClient, MasterClientDto>();
+        CreateMap<CreateUpdateMasterClientDto, MasterClient>(MemberList.Source);
     }
 }

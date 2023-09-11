@@ -69,5 +69,105 @@ namespace ACME.POC3.Invoice
         {
          
         }
+
+    public MasterClient(
+        Guid id,
+        int? sourceId,
+        int? sourceRefId,
+        string sourceRefGuid,
+        string tCKN_VN,
+        string title,
+        string title2,
+        string name,
+        string surname,
+        string taxOffice,
+        int? taxOfficeId,
+        string country,
+        Guid countryId,
+        string city,
+        int? cityId,
+        Guid priceListId,
+        Guid categoryId,
+        string town,
+        int? townId,
+        int? exchangeRateCalculation,
+        string buildingName,
+        string buildingNumber,
+        string doorNumber,
+        string postCode,
+        string streetName,
+        string email,
+        string phone,
+        string fax,
+        string webAddress,
+        string address,
+        string sourceCode,
+        System.DateTime? sourceLastUpdate,
+        Guid? tenantId,
+        double totalCredit,
+        double totalDebit,
+        double totalBalance,
+        double totalCreditLimit,
+        double totalDebitLimit,
+        double totalBalanceLimit,
+        double totalCreditLimitUsed,
+        double totalDebitLimitUsed,
+        double totalBalanceLimitUsed,
+        double totalCreditLimitLeft,
+        double totalDebitLimitLeft,
+        double totalBalanceLimitLeft,
+        double totalCreditLimitLeftPercent,
+        double totalDebitLimitLeftPercent,
+        double totalBalanceLimitLeftPercent
+    ) : base(id)
+    {
+        SourceId = sourceId;
+        SourceRefId = sourceRefId;
+        SourceRefGuid = sourceRefGuid;
+        TCKN_VN = tCKN_VN;
+        Title = title;
+        Title2 = title2;
+        Name = name;
+        Surname = surname;
+        TaxOffice = taxOffice;
+        TaxOfficeId = taxOfficeId;
+        Country = country;
+        CountryId = countryId;
+        City = city;
+        CityId = cityId;
+        PriceListId = priceListId;
+        CategoryId = categoryId;
+        Town = town;
+        TownId = townId;
+        ExchangeRateCalculation = exchangeRateCalculation;
+        BuildingName = buildingName;
+        BuildingNumber = buildingNumber;
+        DoorNumber = doorNumber;
+        PostCode = postCode;
+        StreetName = streetName;
+        Email = email;
+        Phone = phone;
+        Fax = fax;
+        WebAddress = webAddress;
+        Address = address;
+        SourceCode = sourceCode;
+        SourceLastUpdate = sourceLastUpdate;
+        TenantId = tenantId;
+        TotalCredit = totalCredit;
+        TotalDebit = totalDebit;
+        TotalBalance = totalBalance;
+        TotalCreditLimit = totalCreditLimit;
+        TotalDebitLimit = totalDebitLimit;
+        TotalBalanceLimit = totalBalanceLimit;
+        TotalCreditLimitUsed = totalCreditLimitUsed;
+        TotalDebitLimitUsed = totalDebitLimitUsed;
+        TotalBalanceLimitUsed = totalBalanceLimitUsed;
+        TotalCreditLimitLeft = totalCreditLimitLeft;
+        TotalDebitLimitLeft = totalDebitLimitLeft;
+        TotalBalanceLimitLeft = totalBalanceLimitLeft;
+        TotalCreditLimitLeftPercent = totalCreditLimitLeftPercent;
+        TotalDebitLimitLeftPercent = totalDebitLimitLeftPercent;
+        TotalBalanceLimitLeftPercent = totalBalanceLimitLeftPercent;
+    }
     }
 }
