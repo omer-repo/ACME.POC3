@@ -45,84 +45,82 @@ namespace ACME.POC3.Invoice
                 message = "",
                 value = invoice
             };
-            using (_dataFilter.Disable<IMultiTenant>())
+
+            using (var uow = _unitOfWorkManager.Begin(true, false))
             {
-                using (var uow = _unitOfWorkManager.Begin(true, false))
+                #region MasterClient
+                MasterClient masterClient;
+
+
+                if (eInvoice.invoice.MasterClientId != Guid.Empty)
                 {
-                    #region MasterClient
-                    MasterClient masterClient;
-
-
-                    if (eInvoice.invoice.MasterClientId != Guid.Empty)
-                    {
-                        masterClient = await _masterClientRepository.FirstOrDefaultAsync(x => x.Id == eInvoice.invoice.MasterClientId);
-                    }
-                    else if (!eInvoice.MasterClientERPCode.IsNullOrEmpty() && eInvoice.invoice.SourceId != 0)
-                    {
-                        masterClient = await _masterClientRepository.FirstOrDefaultAsync(x => x.SourceId == eInvoice.invoice.SourceId && x.SourceCode == eInvoice.MasterClientERPCode);
-                    }
-                    else
-                    {
-                        masterClient = await _masterClientRepository.FirstOrDefaultAsync(x => x.TCKN_VN == eInvoice.invoice.TCKN_VN);
-                    }
-
-                    if (masterClient == null)
-                    {
-                        masterClient = new MasterClient(_guidGenerator.Create())
-                        {
-                            Name = eInvoice.invoice.Name,
-                            Surname = eInvoice.invoice.Surname,
-                            Title = eInvoice.invoice.Title,
-
-                        };
-                        await _masterClientRepository.InsertAsync(masterClient);
-                    }
-                    else
-                    {
-                        masterClient.Title = eInvoice.invoice.Title;
-
-                        await _masterClientRepository.UpdateAsync(masterClient);
-                    }
-                    #endregion
-
-                    #region Invoice
-
-
-                    await _invoiceRepository.InsertAsync(invoice);
-                    eInvoice.invoice = _objectMapper.Map<Invoice, InvoiceDto>(invoice);
-                    eInvoice.invoice.MasterClientId = masterClient.Id;
-                    #endregion
-
-                    #region Invoice Lines
-                    
-                    List<InvoiceLine> invoiceLineItems = new List<InvoiceLine>();
-                    foreach (var item in eInvoice.invoiceLines)
-                    {
-
-                        item.MasterClientId = masterClient.Id;
-                        item.InvoiceId = invoice.Id;
-                        var lineItem = new InvoiceLine(Guid.NewGuid());
-
-                        if (item.Id == Guid.Empty)
-                        {
-                            _objectMapper.Map<InvoiceLineDto, InvoiceLine>(item, lineItem);
-                            var invoiceLine = await _invoiceLineRepository.InsertAsync(lineItem);
-                        }
-                        else
-                        {
-                            lineItem = await _invoiceLineRepository.GetAsync(item.Id);
-                            _objectMapper.Map<InvoiceLineDto, InvoiceLine>(item, lineItem);
-                            var invoiceLine = await _invoiceLineRepository.UpdateAsync(lineItem);
-                        }
-                    }
-
-                    #endregion
-
-                    result.value = invoice;
-                    await uow.CompleteAsync();
-
-                    //Important => I will use other services here, like background job managers. So, invoice have to be saved to db before these services.
+                    masterClient = await _masterClientRepository.FirstOrDefaultAsync(x => x.Id == eInvoice.invoice.MasterClientId);
                 }
+                else if (!eInvoice.MasterClientERPCode.IsNullOrEmpty() && eInvoice.invoice.SourceId != 0)
+                {
+                    masterClient = await _masterClientRepository.FirstOrDefaultAsync(x => x.SourceId == eInvoice.invoice.SourceId && x.SourceCode == eInvoice.MasterClientERPCode);
+                }
+                else
+                {
+                    masterClient = await _masterClientRepository.FirstOrDefaultAsync(x => x.TCKN_VN == eInvoice.invoice.TCKN_VN);
+                }
+
+                if (masterClient == null)
+                {
+                    masterClient = new MasterClient(_guidGenerator.Create())
+                    {
+                        Name = eInvoice.invoice.Name,
+                        Surname = eInvoice.invoice.Surname,
+                        Title = eInvoice.invoice.Title,
+
+                    };
+                    await _masterClientRepository.InsertAsync(masterClient);
+                }
+                else
+                {
+                    masterClient.Title = eInvoice.invoice.Title;
+
+                    await _masterClientRepository.UpdateAsync(masterClient);
+                }
+                #endregion
+
+                #region Invoice
+
+
+                await _invoiceRepository.InsertAsync(invoice);
+                eInvoice.invoice = _objectMapper.Map<Invoice, InvoiceDto>(invoice);
+                eInvoice.invoice.MasterClientId = masterClient.Id;
+                #endregion
+
+                #region Invoice Lines
+
+                List<InvoiceLine> invoiceLineItems = new List<InvoiceLine>();
+                foreach (var item in eInvoice.invoiceLines)
+                {
+
+                    item.MasterClientId = masterClient.Id;
+                    item.InvoiceId = invoice.Id;
+                    var lineItem = new InvoiceLine(Guid.NewGuid());
+
+                    if (item.Id == Guid.Empty)
+                    {
+                        _objectMapper.Map<InvoiceLineDto, InvoiceLine>(item, lineItem);
+                        var invoiceLine = await _invoiceLineRepository.InsertAsync(lineItem);
+                    }
+                    else
+                    {
+                        lineItem = await _invoiceLineRepository.GetAsync(item.Id);
+                        _objectMapper.Map<InvoiceLineDto, InvoiceLine>(item, lineItem);
+                        var invoiceLine = await _invoiceLineRepository.UpdateAsync(lineItem);
+                    }
+                }
+
+                #endregion
+
+                result.value = invoice;
+                await uow.CompleteAsync();
+
+                //Important => I will use other services here, like background job managers. So, invoice have to be saved to db before these services.
             }
             return result;
         }
